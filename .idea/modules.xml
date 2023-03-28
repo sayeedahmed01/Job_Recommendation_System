@@ -3,8 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/JobScrapper.iml" filepath="$PROJECT_DIR$/.idea/JobScrapper.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/jobscapper.iml" filepath="$PROJECT_DIR$/.idea/modules/jobscapper.iml" />
-      <module fileurl="file://$PROJECT_DIR$/jobscapper/.idea/modules/jobscapper-build.iml" filepath="$PROJECT_DIR$/jobscapper/.idea/modules/jobscapper-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jobscapper/.idea/modules/ScalaImplementation.iml" filepath="$PROJECT_DIR$/jobscapper/.idea/modules/ScalaImplementation.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jobscapper/.idea/modules/ScalaImplementation-build.iml" filepath="$PROJECT_DIR$/jobscapper/.idea/modules/ScalaImplementation-build.iml" />
     </modules>
   </component>
 </project>
