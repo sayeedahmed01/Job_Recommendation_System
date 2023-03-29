@@ -3,7 +3,6 @@ import org.jsoup.Jsoup
 import org.openqa.selenium.By
 import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.support.ui.{ExpectedConditions, WebDriverWait}
-
 import java.io.{File, FileWriter}
 import java.time.Duration
 import java.util.Scanner
@@ -30,11 +29,9 @@ object IndeedScraper {
     WebDriverManager.chromedriver().setup()
     // Create a new ChromeDriver instance
     val driver = new ChromeDriver()
-
-    //System.setProperty("webdriver.chrome.driver", "/Users/sayeedahmed/Downloads/chromedriver_mac64/")
-    //val options = new ChromeOptions()
-    //options.addArguments("start-maximized")
-    //val driver = new ChromeDriver(options)
+//    val options = new ChromeOptions();
+//    options.addArguments("--headless=new");
+//    val driver = new ChromeDriver(options)
 
     // Open Search Result Pages
     for (start <- startList) {
@@ -47,7 +44,7 @@ object IndeedScraper {
     val jobList = new ListBuffer[Map[String, String]]
     for (start <- startList) {
       driver.switchTo().window(s"tab$start")
-      val wait = new WebDriverWait(driver, Duration.ofSeconds(30).toMillis())
+      val wait = new WebDriverWait(driver, Duration.ofSeconds(30).toMillis)
       val result = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.className("resultContent")))
 
       //      results.forEach { result =>
@@ -88,9 +85,6 @@ object IndeedScraper {
         )
         jobList += job
       }
-
-
-
 
       driver.close()
     }
