@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="lihaoyi.requests_2.13" type="repository">
+    <properties maven-id="com.lihaoyi:requests_2.13:0.7.0" />
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/lihaoyi/requests_2.13/0.7.0/requests_2.13-0.7.0.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/lihaoyi/geny_2.13/0.6.10/geny_2.13-0.6.10.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -7,6 +7,11 @@ lazy val root = (project in file("."))
     name := "ScalaImplementation" ,
     libraryDependencies += "org.seleniumhq.selenium" % "selenium-java" % "3.141.59",
     libraryDependencies += "io.github.bonigarcia" % "webdrivermanager" % "5.0.3" ,
-    libraryDependencies += "org.jsoup" % "jsoup" % "1.14.3"
-
+    libraryDependencies += "org.jsoup" % "jsoup" % "1.14.3",
+    libraryDependencies += "org.scalaj" %% "scalaj-http" % "2.4.2",
+    libraryDependencies += "com.lihaoyi" %% "ujson" % "1.4.3",
+    libraryDependencies += "io.circe" %% "circe-parser" % "0.14.1",
+    libraryDependencies += "org.scalaj" %% "scalaj-http" % "2.4.2",
+    libraryDependencies += "com.microsoft.playwright" % "playwright" % "1.17.1",
+      libraryDependencies += "com.lihaoyi"%%"requests" % "0.7.0",
   )
