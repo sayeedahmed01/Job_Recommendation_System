@@ -82,6 +82,7 @@ object IndeedScraper {
         result.forEach { result =>
           val parsedResult = Jsoup.parse(result.getAttribute("outerHTML"))
           val jobDescription = parsedResult.select("div.jobsearch-JobComponent-description").text()
+
           jobList1 += job + ("Job Description" -> jobDescription)
         }
       }
@@ -93,9 +94,9 @@ object IndeedScraper {
     // Write Results to CSV File
     val csvFile = new File(s"$query$location.csv")
     val writer = new FileWriter(csvFile)
-    writer.write("Job ID|Job Title|Company|Location|Job Link|Salary|Job Description\n")
+    writer.write("Job ID|Job Title|Company|Location|Job Link|Salary|Job Description|Date Posted\n")
     for (job <- jobList1) {
-      writer.write(s"${job("Job ID")}|${job("Job Title")}|${job("Company")}|${job("Location")}|${job("Job Link")}|${job("Salary")}|${job("Date Posted")}|${job("Job Description")}\n")
+      writer.write(s"${job("Job ID")}|${job("Job Title")}|${job("Company")}|${job("Location")}|${job("Job Link")}|${job("Salary")}|${job("Job Description")}|${job("Date Posted")}\n")
     }
     writer.close()
 

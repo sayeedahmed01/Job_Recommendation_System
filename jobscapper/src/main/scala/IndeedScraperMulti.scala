@@ -21,7 +21,7 @@ object IndeedScraperMulti {
 
     val csvFile = new File(s"$query+all_locations.csv")
     val writer = new FileWriter(csvFile, true) // Open file in append mode
-    writer.write("Job Title, Company, Location, Job Link, Salary\n")
+    writer.write("Job ID|Job Title|Company|Location|Job Link|Salary|Job Description|Date Posted\n")
 
     for (location <- all_location) {
       scrapeIndeed(query,location,numPages, writer)
@@ -60,6 +60,7 @@ object IndeedScraperMulti {
 
     // Extract Job Information
     val jobList = new ListBuffer[Map[String, String]]
+    val jobList1 = new ListBuffer[Map[String, String]]
     for (start <- startList) {
       driver.switchTo().window(s"tab$start")
       val wait = new WebDriverWait(driver, Duration.ofSeconds(30).toMillis)
@@ -68,11 +69,19 @@ object IndeedScraperMulti {
       result.forEach { result =>
         val parsedResult = Jsoup.parse(result.getAttribute("outerHTML"))
         val job = Map(
+          "Job ID" -> parsedResult.select("a").attr("id"),
           "Job Title" -> parsedResult.select("a").text(),
           "Company" -> parsedResult.select("span.companyName").text(),
           "Location" -> parsedResult.select("div.companyLocation").text(),
           "Job Link" -> parsedResult.select("a").attr("href"),
           //"Job Link" -> "https://www.indeed.com" + parsedResult.select("a").attr("href").replace("/rc/clk", ""),
+          "Date Posted" -> {
+            if (parsedResult.select("span.date").first() != null) {
+              parsedResult.select("span.date").first().text()
+            } else {
+              "NA"
+            }
+          },
           "Salary" -> {
             val salarySnippet = parsedResult.select("div.metadata.salary-snippet-container")
             if (salarySnippet != null) salarySnippet.text()
@@ -86,13 +95,28 @@ object IndeedScraperMulti {
         jobList += job
       }
     }
+    for (job <- jobList) {
+      "Job Description" -> {
+        val jobLink = job("Job Link")
+        driver.executeScript(s"window.open('$jobLink');")
+        val wait = new WebDriverWait(driver, Duration.ofSeconds(30).toMillis)
+        val result = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.className("jobsearch-JobComponent-description")))
+        result.forEach { result =>
+          val parsedResult = Jsoup.parse(result.getAttribute("outerHTML"))
+          val jobDescription = parsedResult.select("div.jobsearch-JobComponent-description").text()
+          jobList1 += job + ("Job Description" -> jobDescription)
+          Thread.sleep(2500)
+        }
+      }
+    }
+    driver.close()
 
     // Write Results to CSV File
     //val csvFile = new File(s"$query$location.csv")
     //val writer = new FileWriter(csvFile)
     //writer.write("Job Title, Company, Location, Job Link, Salary\n")
-    for (job <- jobList) {
-      writer.write(s"${job("Job Title")},${job("Company")},${job("Location")},${job("Job Link")},${job("Salary")}\n")
+    for (job <- jobList1) {
+      writer.write(s"${job("Job ID")}|${job("Job Title")}|${job("Company")}|${job("Location")}|${job("Job Link")}|${job("Salary")}|${job("Job Description")}|${job("Date Posted")}\n")
     }
     //writer.close()
 
