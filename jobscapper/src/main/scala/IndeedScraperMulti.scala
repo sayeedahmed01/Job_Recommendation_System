@@ -1,13 +1,18 @@
 import io.github.bonigarcia.wdm.WebDriverManager
 import org.jsoup.Jsoup
-import org.openqa.selenium.By
 import org.openqa.selenium.chrome.{ChromeDriver, ChromeOptions}
 import org.openqa.selenium.support.ui.{ExpectedConditions, WebDriverWait}
-
+import org.openqa.selenium.{By, TimeoutException, WebDriver}
 import java.io.{File, FileWriter}
 import java.time.Duration
 import java.util.Scanner
-import scala.collection.mutable.ListBuffer
+import java.util.concurrent.Executors
+import scala.collection.JavaConverters._
+import scala.concurrent.duration._
+import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.util.{Failure, Success, Try}
+
+case class Job(id: String, title: String, company: String, location: String, link: String, salary: String, description: String, datePosted: String)
 
 object IndeedScraperMulti {
   def main(args: Array[String]): Unit = {
@@ -17,110 +22,126 @@ object IndeedScraperMulti {
     print("Number of pages: ")
     val numPages = scanner.nextInt()
     scanner.close()
-    val all_location = List("Boston", "Seattle", "Chicago", "Austin")
+    val locations = List("Boston", "Seattle", "Chicago", "Austin")
 
     val csvFile = new File(s"$query+all_locations.csv")
     val writer = new FileWriter(csvFile, true) // Open file in append mode
     writer.write("Job ID|Job Title|Company|Location|Job Link|Salary|Job Description|Date Posted\n")
 
-    for (location <- all_location) {
-      scrapeIndeed(query,location,numPages, writer)
+    val options = new ChromeOptions()
+    options.addArguments("headless")
+
+    // Setup WebDriver only once
+    WebDriverManager.chromedriver().setup()
+
+    // Define a custom ExecutionContext for parallelism
+    val executor = Executors.newFixedThreadPool(locations.size)
+    implicit val ec: ExecutionContext = ExecutionContext.fromExecutor(executor)
+
+    // Use Future.sequence to wait for all Futures to complete
+    val scrapingFutures = locations.map { location =>
+      Future {
+        val driver = new ChromeDriver()//(options)
+        val jobs = scrapeIndeed(driver, query, location, numPages)
+        driver.quit()
+        (location, jobs)
+      }
     }
+
+    val allJobs = Await.result(Future.sequence(scrapingFutures), 30.minutes)
+
+    // Write the jobs to the CSV file
+    allJobs.foreach { case (_, jobs) => writeJobsToCSV(writer, jobs) }
+
+    // Shutdown the thread pool executor
+    executor.shutdown()
 
     writer.close()
   }
 
-  def scrapeIndeed(query:String,location:String,numPages:Int, writer:FileWriter): Unit = {
+  def scrapeIndeed(driver: WebDriver, query: String, location: String, numPages: Int): List[Job] = {
+    val searchResultURLs = (0 until numPages * 10 by 10).map(start => s"https://www.indeed.com/jobs?q=$query&l=$location&start=$start").toList
+    val wait = new WebDriverWait(driver, Duration.ofSeconds(30).toMillis)
 
-    val startList = List.range(0, numPages * 10, 10)
-
-    // Webdriver Initialization
-    //val driver_loc = WebDriver.ChromeDriverManager().install()
-
-    // Use WebDriverManager to install the latest version of ChromeDriver
-    WebDriverManager.chromedriver().setup()
-    // Create a new ChromeDriver instance
-    val options = new ChromeOptions()
-    options.addArguments("headless")
-    val driver = new ChromeDriver()
-
-    //System.setProperty("webdriver.chrome.driver", "/Users/sayeedahmed/Downloads/chromedriver_mac64/")
-    //val options = new ChromeOptions()
-    //options.addArguments("start-maximized")
-    //val driver = new ChromeDriver(options)
-
-
-    // Open Search Result Pages
-    for (start <- startList) {
-      val url = s"https://www.indeed.com/jobs?q=$query&l=$location&start=$start"
-      driver.executeScript(s"window.open('$url', 'tab$start');")
-      Thread.sleep(1000)
-    }
-
-
-    // Extract Job Information
-    val jobList = new ListBuffer[Map[String, String]]
-    val jobList1 = new ListBuffer[Map[String, String]]
-    for (start <- startList) {
-      driver.switchTo().window(s"tab$start")
-      val wait = new WebDriverWait(driver, Duration.ofSeconds(30).toMillis)
-      val result = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.className("resultContent")))
-
-      result.forEach { result =>
+    searchResultURLs.flatMap { url =>
+      driver.get(url)
+      val results = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.className("resultContent")))
+      results.asScala.map { result =>
         val parsedResult = Jsoup.parse(result.getAttribute("outerHTML"))
-        val job = Map(
-          "Job ID" -> parsedResult.select("a").attr("id"),
-          "Job Title" -> parsedResult.select("a").text(),
-          "Company" -> parsedResult.select("span.companyName").text(),
-          "Location" -> parsedResult.select("div.companyLocation").text(),
-          "Job Link" -> parsedResult.select("a").attr("href"),
-          //"Job Link" -> "https://www.indeed.com" + parsedResult.select("a").attr("href").replace("/rc/clk", ""),
-          "Date Posted" -> {
-            if (parsedResult.select("span.date").first() != null) {
-              parsedResult.select("span.date").first().text()
-            } else {
-              "NA"
-            }
-          },
-          "Salary" -> {
-            val salarySnippet = parsedResult.select("div.metadata.salary-snippet-container")
-            if (salarySnippet != null) salarySnippet.text()
-            else {
-              val estimatedSalary = parsedResult.select("div.metadata.estimated-salary-container")
-              if (estimatedSalary != null) estimatedSalary.text()
-              else ""
-            }
-          }
+        val jobLink = parsedResult.select("a").attr("href")
+        val description = getJobDescription(driver, wait, jobLink)
+        Job(
+          id = parsedResult.select("a").attr("id"),
+          title = parsedResult.select("a").text(),
+          company = parsedResult.select("span.companyName").text(),
+          location = parsedResult.select("div.companyLocation").text(),
+          link = jobLink,
+          salary = parseSalary(parsedResult),
+          description = description.getOrElse(""),
+          datePosted = parseDatePosted(parsedResult)
         )
-        jobList += job
-      }
+      }.toList
     }
-    for (job <- jobList) {
-      "Job Description" -> {
-        val jobLink = job("Job Link")
-        driver.executeScript(s"window.open('$jobLink');")
-        val wait = new WebDriverWait(driver, Duration.ofSeconds(30).toMillis)
-        val result = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.className("jobsearch-JobComponent-description")))
-        result.forEach { result =>
-          val parsedResult = Jsoup.parse(result.getAttribute("outerHTML"))
-          val jobDescription = parsedResult.select("div.jobsearch-JobComponent-description").text()
-          jobList1 += job + ("Job Description" -> jobDescription)
-          Thread.sleep(2500)
-        }
-      }
-    }
-    driver.close()
+  }
 
-    // Write Results to CSV File
-    //val csvFile = new File(s"$query$location.csv")
-    //val writer = new FileWriter(csvFile)
-    //writer.write("Job Title, Company, Location, Job Link, Salary\n")
-    for (job <- jobList1) {
-      writer.write(s"${job("Job ID")}|${job("Job Title")}|${job("Company")}|${job("Location")}|${job("Job Link")}|${job("Salary")}|${job("Job Description")}|${job("Date Posted")}\n")
-    }
-    //writer.close()
+  def getJobDescription(driver: WebDriver, wait: WebDriverWait, jobLink: String): Option[String] = {
+    Try {
+      // Open job link in a new tab
+      val script = s"window.open('$jobLink', '_blank');"
+      driver.asInstanceOf[ChromeDriver].executeScript(script)
 
-    // Webdriver Cleanup
-    driver.quit()
+      // Wait for 2 seconds
+      Thread.sleep(2000)
+
+      // Switch to the new tab
+      val newTabHandle = driver.getWindowHandles.asScala.toList.last
+      driver.switchTo().window(newTabHandle)
+
+      // Extract job description
+      val result = Try(wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[contains(@class, 'jobsearch-JobComponent-description') or contains(@class, 'jobsearch-jobDescriptionText')]")))).recover {
+        case _: TimeoutException => null
+      }.get
+
+      val description = if (result != null) {
+        val parsedResult = Jsoup.parse(result.getAttribute("outerHTML"))
+        parsedResult.select("div.jobsearch-JobComponent-description, div.jobsearch-jobDescriptionText").text()
+      } else {
+        throw new Exception("Timeout while waiting for job description")
+      }
+
+      // Wait for 2 seconds
+      Thread.sleep(2000)
+
+      // Close the new tab and switch back to the main window
+      driver.close()
+      driver.switchTo().window(driver.getWindowHandles.asScala.toList.head)
+
+      description
+    } match {
+      case Success(description) => Some(description)
+      case Failure(_) => None
+    }
+  }
+
+
+  def parseSalary(parsedResult: org.jsoup.nodes.Document): String = {
+    val salarySnippet = parsedResult.select("div.metadata.salary-snippet-container")
+    if (salarySnippet != null) salarySnippet.text
+    else {
+      val estimatedSalary = parsedResult.select("div.metadata.estimated-salary-container")
+      if (estimatedSalary != null) estimatedSalary.text()
+      else ""
+    }
+  }
+
+  def parseDatePosted(parsedResult: org.jsoup.nodes.Document): String = {
+    val datePostedElement = parsedResult.select("span.date").first()
+    if (datePostedElement != null) datePostedElement.text() else "NA"
+  }
+
+  def writeJobsToCSV(writer: FileWriter, jobs: List[Job]): Unit = {
+    jobs.foreach { job =>
+      writer.write(s"${job.id}|${job.title}|${job.company}|${job.location}|${job.link}|${job.salary}|${job.description}|${job.datePosted}\n")
+    }
   }
 }
