@@ -3,6 +3,7 @@ import org.jsoup.Jsoup
 import org.openqa.selenium.chrome.{ChromeDriver, ChromeOptions}
 import org.openqa.selenium.support.ui.{ExpectedConditions, WebDriverWait}
 import org.openqa.selenium.{By, TimeoutException, WebDriver}
+
 import java.io.{File, FileWriter}
 import java.time.Duration
 import java.util.Scanner
@@ -22,7 +23,7 @@ object IndeedScraperMulti {
     print("Number of pages: ")
     val numPages = scanner.nextInt()
     scanner.close()
-    val locations = List("Boston", "Seattle", "Chicago", "Austin")
+    val locations = List("Austin")//, "Boston")//, "Seattle", "Chicago", "Austin", "San Jose","Boulder", "Washington")
 
     val csvFile = new File(s"$query+all_locations.csv")
     val writer = new FileWriter(csvFile, true) // Open file in append mode
@@ -41,14 +42,14 @@ object IndeedScraperMulti {
     // Use Future.sequence to wait for all Futures to complete
     val scrapingFutures = locations.map { location =>
       Future {
-        val driver = new ChromeDriver()//(options)
+        val driver = new ChromeDriver(options)
         val jobs = scrapeIndeed(driver, query, location, numPages)
         driver.quit()
         (location, jobs)
       }
     }
 
-    val allJobs = Await.result(Future.sequence(scrapingFutures), 30.minutes)
+    val allJobs = Await.result(Future.sequence(scrapingFutures), 60.minutes)
 
     // Write the jobs to the CSV file
     allJobs.foreach { case (_, jobs) => writeJobsToCSV(writer, jobs) }
@@ -60,8 +61,8 @@ object IndeedScraperMulti {
   }
 
   def scrapeIndeed(driver: WebDriver, query: String, location: String, numPages: Int): List[Job] = {
-    val searchResultURLs = (0 until numPages * 10 by 10).map(start => s"https://www.indeed.com/jobs?q=$query&l=$location&start=$start").toList
-    val wait = new WebDriverWait(driver, Duration.ofSeconds(30).toMillis)
+    val searchResultURLs = (0 until numPages * 10 by 10).map(start => s"https://www.indeed.com/jobs?q=$query&l=$location&sort=date&start=$start").toList
+    val wait = new WebDriverWait(driver, Duration.ofSeconds(60).toMillis)
 
     searchResultURLs.flatMap { url =>
       driver.get(url)
