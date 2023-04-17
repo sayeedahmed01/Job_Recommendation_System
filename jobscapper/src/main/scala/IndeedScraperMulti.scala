@@ -29,7 +29,7 @@ object IndeedScraperMulti {
     val writer = new FileWriter(csvFile, true)
     // Check if the file is new or empty before writing the header
     if (!csvFile.exists() || csvFile.length() == 0) {
-      writer.write("Job ID|Job Title|Company|Location|Job Link|Salary|Job Description|Date Posted\n")
+        writer.write("Job_ID|Job_Title|Company|Location|Job_Link|Salary|Job_Description|Date_Posted\n")
     }
     val options = new ChromeOptions()
     options.addArguments("headless")
