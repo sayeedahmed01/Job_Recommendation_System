@@ -23,12 +23,14 @@ object IndeedScraperMulti {
     print("Number of pages: ")
     val numPages = scanner.nextInt()
     scanner.close()
-    val locations = List("Austin", "San Jose")//"Boston", "Seattle", "Chicago", "Austin", "San Jose","Boulder", "Washington"
+    val locations = List("Boston", "Seattle", "Chicago", "Austin", "San Jose","Boulder", "Washington")//"Boston", "Seattle", "Chicago", "Austin", "San Jose","Boulder", "Washington"
 
     val csvFile = new File(s"$query+all_locations.csv")
     val writer = new FileWriter(csvFile, true)
-    writer.write("Job ID|Job Title|Company|Location|Job Link|Salary|Job Description|Date Posted\n")
-
+    // Check if the file is new or empty before writing the header
+    if (!csvFile.exists() || csvFile.length() == 0) {
+      writer.write("Job ID|Job Title|Company|Location|Job Link|Salary|Job Description|Date Posted\n")
+    }
     val options = new ChromeOptions()
     options.addArguments("headless")
 
