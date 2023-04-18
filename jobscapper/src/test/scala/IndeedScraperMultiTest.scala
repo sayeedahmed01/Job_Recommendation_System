@@ -1,7 +1,8 @@
 import io.github.bonigarcia.wdm.WebDriverManager
-import org.scalatest.funsuite.AnyFunSuite
 import org.jsoup.Jsoup
-import org.openqa.selenium.chrome.ChromeDriver
+import org.openqa.selenium.chrome.{ChromeDriver, ChromeOptions}
+import org.openqa.selenium.support.ui.WebDriverWait
+import org.scalatest.funsuite.AnyFunSuite
 
 class IndeedScraperMultiTest extends AnyFunSuite {
 
@@ -51,5 +52,18 @@ class IndeedScraperMultiTest extends AnyFunSuite {
     driver.quit()
 
     assert(jobs.nonEmpty)
+  }
+
+  // A test for getJobDescription function
+  test("getJobDescription should return the correct job description") {
+    WebDriverManager.chromedriver().setup()
+    val driver = new ChromeDriver()
+    val wait = new WebDriverWait(driver, 30)
+
+    val jobLink = "https://www.indeed.com/viewjob?jk=01eac57395f52da2&from=serp&vjs=3"
+    val description = IndeedScraperMulti.getJobDescription(driver, wait, jobLink)
+
+    driver.quit()
+    assert(description.isDefined)
   }
 }
