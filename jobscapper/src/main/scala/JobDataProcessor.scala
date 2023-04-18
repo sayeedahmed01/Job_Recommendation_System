@@ -17,11 +17,20 @@
       val dbTable = "jobs_all"
       val dbUser = "root"
       val dbPassword = "Knock!23"
-
       val connectionProperties = Map("user" -> dbUser, "password" -> dbPassword)
+      val maxLengths = Map(
+        "Job_ID" -> 100,
+        "Job_Title" -> 255, // tinytext has a maximum length of 255 characters
+        "Company" -> 255, // tinytext has a maximum length of 255 characters
+        "Location" -> 200,
+        "Job_Link" -> 16777215, // mediumtext has a maximum length of 16,777,215 characters
+        "Salary" -> 45,
+        "Job_Description" -> 4294967295L, // longtext has a maximum length of 4,294,967,295 characters
+        "Date_Posted" -> 50
+      )
 
       val existingData = readFromDatabase(spark, jdbcUrl, dbTable, connectionProperties)
-      val newData = filterNewData(cleanedData, existingData)
+      val newData = filterNewData(cleanedData, existingData, maxLengths) // Pass the maxLengths to the function
       writeToDatabase(newData, "append", jdbcUrl, dbTable, connectionProperties)
 
       val dataFromDatabase = readFromDatabase(spark, jdbcUrl, dbTable, connectionProperties)
@@ -63,9 +72,19 @@
         .jdbc(jdbcUrl, dbTable, props)
     }
 
-    def filterNewData(cleanedData: DataFrame, existingData: DataFrame): DataFrame = {
-      cleanedData.join(existingData, cleanedData("Job_ID") === existingData("Job_ID"), "leftanti")
+    def filterNewData(cleanedData: DataFrame, existingData: DataFrame, maxLengths: Map[String, AnyVal]): DataFrame = {
+      cleanedData
+        .filter(length(col("Job_ID")) <= maxLengths("Job_ID"))
+        .filter(length(col("Job_Title")) <= maxLengths("Job_Title"))
+        .filter(length(col("Company")) <= maxLengths("Company"))
+        .filter(length(col("Location")) <= maxLengths("Location"))
+        .filter(length(col("Job_Link")) <= maxLengths("Job_Link"))
+        .filter(length(col("Salary")) <= maxLengths("Salary"))
+        .filter(length(col("Job_Description")) <= maxLengths("Job_Description"))
+        .filter(length(col("Date_Posted")) <= maxLengths("Date_Posted"))
+        .join(existingData, cleanedData("Job_ID") === existingData("Job_ID"), "leftanti")
     }
+
 
     def writeToDatabase(df: DataFrame, saveMode: String, jdbcUrl: String, dbTable: String, connectionProperties: Map[String, String]): Unit = {
       val props = new java.util.Properties
