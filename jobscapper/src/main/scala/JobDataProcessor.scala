@@ -8,7 +8,7 @@ object JobDataProcessor {
       .master("local")
       .getOrCreate()
 
-    val inputFilePath = "/Users/sayeedahmed/IdeaProjects/JobScrapper/Data Engineer+all_locations.csv"
+    val inputFilePath = "/Users/sayeedahmed/IdeaProjects/JobScrapper/Data Science Intern+all_locations.csv"
 
     val rawData = readCSV(spark, inputFilePath)
 
