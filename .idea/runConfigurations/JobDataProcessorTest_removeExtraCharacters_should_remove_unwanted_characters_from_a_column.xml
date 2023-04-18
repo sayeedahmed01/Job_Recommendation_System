@@ -1,0 +1,18 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="JobDataProcessorTest.removeExtraCharacters should remove unwanted characters from a column" type="ScalaTestRunConfiguration" factoryName="ScalaTest" nameIsGenerated="true" show_console_on_std_err="false" show_console_on_std_out="false">
+    <module name="ScalaImplementation" />
+    <option name="allowRunningInParallel" value="false" />
+    <option name="projectPathOnTarget" />
+    <option name="selectedOptions">
+      <list />
+    </option>
+    <option name="testKind" value="Test name" />
+    <option name="javaOptions" value="--add-exports java.base/sun.nio.ch=ALL-UNNAMED" />
+    <option name="shortenClasspath" value="NONE" />
+    <option name="testClassPath" value="JobDataProcessorTest" />
+    <option name="testName" value="removeExtraCharacters should remove unwanted characters from a column" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
