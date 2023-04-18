@@ -1,6 +1,6 @@
 import io.github.bonigarcia.wdm.WebDriverManager
 import org.jsoup.Jsoup
-import org.openqa.selenium.chrome.{ChromeDriver, ChromeOptions}
+import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.support.ui.WebDriverWait
 import org.scalatest.funsuite.AnyFunSuite
 

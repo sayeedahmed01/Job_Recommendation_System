@@ -14,7 +14,7 @@
       val cleanedData = cleanData(rawData)
 
       val jdbcUrl = "jdbc:mysql://127.0.0.1:3306/jobs_db"
-      val dbTable = "jobs_all"
+      val dbTable = "jobs_test"
       val dbUser = "root"
       val dbPassword = "Knock!23"
       val connectionProperties = Map("user" -> dbUser, "password" -> dbPassword)
