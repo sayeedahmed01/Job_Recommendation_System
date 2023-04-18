@@ -25,7 +25,7 @@ object IndeedScraperMulti {
     scanner.close()
     val locations = List("Boston", "Seattle", "Chicago", "Austin", "San Jose","Boulder", "Washington")//"Boston", "Seattle", "Chicago", "Austin", "San Jose","Boulder", "Washington"
 
-    val csvFile = new File(s"$query+all_locations.csv")
+    val csvFile = new File(s"all_locations.csv")
     val writer = new FileWriter(csvFile, true)
     // Check if the file is new or empty before writing the header
     if (!csvFile.exists() || csvFile.length() == 0) {
@@ -153,7 +153,7 @@ object IndeedScraperMulti {
 
   def parseDatePosted(parsedResult: org.jsoup.nodes.Document): String = {
     val datePostedElement = parsedResult.select("span.date").first()
-    if (datePostedElement != null) datePostedElement.text() else "NA"
+    if (datePostedElement != null) datePostedElement.text() else ""
   }
 
   def writeJobsToCSV(writer: FileWriter, jobs: List[Job]): Unit = {
