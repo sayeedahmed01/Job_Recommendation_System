@@ -3,11 +3,51 @@
   <component name="ScalaSbtSettings">
     <option name="linkedExternalProjectsSettings">
       <SbtProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/Slack-Bot" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/slack-bot" />
+            <option value="$PROJECT_DIR$/slack-bot/project" />
+          </set>
+        </option>
+        <option name="sbtVersion" value="1.8.0" />
+      </SbtProjectSettings>
+      <SbtProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/jobscapper" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$/jobscapper" />
             <option value="$PROJECT_DIR$/jobscapper/project" />
+          </set>
+        </option>
+        <option name="sbtVersion" value="1.8.2" />
+      </SbtProjectSettings>
+      <SbtProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/jobscapper/slack-bot" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/jobscapper/slack-bot" />
+            <option value="$PROJECT_DIR$/jobscapper/slack-bot/project" />
+          </set>
+        </option>
+        <option name="sbtVersion" value="1.8.2" />
+      </SbtProjectSettings>
+      <SbtProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/jobscapper/slack_bot" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/jobscapper/slack_bot" />
+            <option value="$PROJECT_DIR$/jobscapper/slack_bot/project" />
+          </set>
+        </option>
+        <option name="sbtVersion" value="1.8.2" />
+      </SbtProjectSettings>
+      <SbtProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/slack_bot" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/slack_bot" />
+            <option value="$PROJECT_DIR$/slack_bot/project" />
           </set>
         </option>
         <option name="sbtVersion" value="1.8.2" />
