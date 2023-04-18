@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module external.linked.project.id="root [file:/Users/sayeedahmed/IdeaProjects/JobScrapper/jobscapper/slack-bot/]" external.linked.project.path="$MODULE_DIR$/../../jobscapper/slack-bot" external.root.project.path="$MODULE_DIR$/../../jobscapper/slack-bot" external.system.id="SBT" type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_17">
+    <output url="file://$MODULE_DIR$/../../jobscapper/slack-bot/target/scala-2.13/classes" />
+    <output-test url="file://$MODULE_DIR$/../../jobscapper/slack-bot/target/scala-2.13/test-classes" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/../../jobscapper/slack-bot">
+      <sourceFolder url="file://$MODULE_DIR$/../../jobscapper/slack-bot/src/main/scala" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../jobscapper/slack-bot/src/test/scala" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/../../jobscapper/slack-bot/target" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="sbt: org.scala-lang:scala-library:2.13.10:jar" level="project" />
+  </component>
+</module>

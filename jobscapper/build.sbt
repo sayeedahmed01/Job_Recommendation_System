@@ -19,6 +19,6 @@ lazy val root = (project in file("."))
           "org.apache.spark" %% "spark-core" % "3.3.2",
           "org.apache.spark" %% "spark-sql" % "3.3.2",
           "org.apache.spark" %% "spark-streaming" % "3.3.2",
-          "mysql" % "mysql-connector-java" % "8.0.26"
+          "mysql" % "mysql-connector-java" % "8.0.32"
       )
   )

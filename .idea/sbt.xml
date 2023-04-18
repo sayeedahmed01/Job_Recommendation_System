@@ -6,8 +6,8 @@
         <option name="externalProjectPath" value="$PROJECT_DIR$/Slack-Bot" />
         <option name="modules">
           <set>
-            <option value="$PROJECT_DIR$/slack-bot" />
-            <option value="$PROJECT_DIR$/slack-bot/project" />
+            <option value="$PROJECT_DIR$/Slack-Bot" />
+            <option value="$PROJECT_DIR$/Slack-Bot/project" />
           </set>
         </option>
         <option name="sbtVersion" value="1.8.0" />
@@ -50,7 +50,7 @@
             <option value="$PROJECT_DIR$/slack_bot/project" />
           </set>
         </option>
-        <option name="sbtVersion" value="1.8.2" />
+        <option name="sbtVersion" value="1.8.0" />
       </SbtProjectSettings>
     </option>
   </component>

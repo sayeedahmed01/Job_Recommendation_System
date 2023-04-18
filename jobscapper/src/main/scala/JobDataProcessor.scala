@@ -19,14 +19,14 @@
       val dbPassword = "Knock!23"
       val connectionProperties = Map("user" -> dbUser, "password" -> dbPassword)
       val maxLengths = Map(
-        "Job_ID" -> 100,
-        "Job_Title" -> 255, // tinytext has a maximum length of 255 characters
-        "Company" -> 255, // tinytext has a maximum length of 255 characters
-        "Location" -> 200,
-        "Job_Link" -> 16777215, // mediumtext has a maximum length of 16,777,215 characters
-        "Salary" -> 45,
-        "Job_Description" -> 4294967295L, // longtext has a maximum length of 4,294,967,295 characters
-        "Date_Posted" -> 50
+        "job_ID" -> 100,
+        "job_title" -> 255, // tinytext has a maximum length of 255 characters
+        "company" -> 255, // tinytext has a maximum length of 255 characters
+        "location" -> 200,
+        "job_link" -> 16777215, // mediumtext has a maximum length of 16,777,215 characters
+        "salary" -> 45,
+        "job_description" -> 4294967295L, // longtext has a maximum length of 4,294,967,295 characters
+        "timeScraped" -> 50
       )
 
       val existingData = readFromDatabase(spark, jdbcUrl, dbTable, connectionProperties)
@@ -49,16 +49,18 @@
     }
 
     def cleanData(df: DataFrame): DataFrame = {
-      df.dropDuplicates("Job_ID")
-        .filter(col("Job_Title").isNotNull && col("Job_Link").isNotNull && col("Company").isNotNull)
-        .na.fill("Unknown", Seq("Location"))
-        .na.fill("Not provided", Seq("Salary", "Job_Description"))
-        .withColumn("Job_Title", removeExtraCharacters(col("Job_Title")))
-        .withColumn("Company", removeExtraCharacters(col("Company")))
-        .withColumn("Location", removeExtraCharacters(col("Location")))
-        .withColumn("Job_Description", removeExtraCharacters(col("Job_Description")))
-        .withColumn("Salary", regexp_replace(col("Salary"), "\\$", ""))
-        .withColumn("Date_Posted", when(col("Date_Posted").isNull, current_date()).otherwise(col("Date_Posted")))
+      df.dropDuplicates("job_ID")
+        .filter(col("job_title").isNotNull && col("job_link").isNotNull && col("company").isNotNull)
+        .na.fill("Unknown", Seq("location"))
+        .na.fill("Not provided", Seq("salary", "job_description"))
+        .withColumn("job_title", removeExtraCharacters(col("job_title")))
+        .withColumn("company", removeExtraCharacters(col("company")))
+        .withColumn("location", removeExtraCharacters(col("location")))
+        .withColumn("job_description", removeExtraCharacters(col("job_description")))
+        .withColumn("salary", regexp_replace(col("salary"), "\\$", ""))
+        .withColumn("timeScraped", when(col("timeScraped").isNull, current_timestamp()).otherwise(col("timeScraped")))
+        .filter(col("timeScraped").cast("timestamp").isNotNull)
+        .filter(col("job_link").startsWith("/")) // Add this line to filter out rows where the job_link column doesn't start with '/'
     }
 
     def removeExtraCharacters(column: org.apache.spark.sql.Column): org.apache.spark.sql.Column = {
@@ -74,15 +76,15 @@
 
     def filterNewData(cleanedData: DataFrame, existingData: DataFrame, maxLengths: Map[String, AnyVal]): DataFrame = {
       cleanedData
-        .filter(length(col("Job_ID")) <= maxLengths("Job_ID"))
-        .filter(length(col("Job_Title")) <= maxLengths("Job_Title"))
-        .filter(length(col("Company")) <= maxLengths("Company"))
-        .filter(length(col("Location")) <= maxLengths("Location"))
-        .filter(length(col("Job_Link")) <= maxLengths("Job_Link"))
-        .filter(length(col("Salary")) <= maxLengths("Salary"))
-        .filter(length(col("Job_Description")) <= maxLengths("Job_Description"))
-        .filter(length(col("Date_Posted")) <= maxLengths("Date_Posted"))
-        .join(existingData, cleanedData("Job_ID") === existingData("Job_ID"), "leftanti")
+        .filter(length(col("job_ID")) <= maxLengths("job_ID"))
+        .filter(length(col("job_title")) <= maxLengths("job_title"))
+        .filter(length(col("company")) <= maxLengths("company"))
+        .filter(length(col("location")) <= maxLengths("location"))
+        .filter(length(col("job_link")) <= maxLengths("job_link"))
+        .filter(length(col("salary")) <= maxLengths("salary"))
+        .filter(length(col("job_description")) <= maxLengths("job_description"))
+        .filter(length(col("timeScraped")) <= maxLengths("timeScraped"))
+        .join(existingData, cleanedData("job_ID") === existingData("job_ID"), "leftanti")
     }
 
 
