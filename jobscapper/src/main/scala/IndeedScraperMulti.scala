@@ -6,29 +6,20 @@ import org.openqa.selenium.{By, TimeoutException, WebDriver}
 
 import java.io.{File, FileWriter}
 import java.time.LocalDateTime
-import java.util.Scanner
 import java.util.concurrent.Executors
 import scala.collection.JavaConverters._
 import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.util.{Failure, Success, Try}
 
-case class Job(id: String, title: String, company: String, location: String, link: String, salary: String, description: String, timeScraped: LocalDateTime)
+case class Job(id: String, title: String, company: String, location: String, link: String, salary: String, description: String, query: String, timeScraped: LocalDateTime)
 object IndeedScraperMulti {
-  def main(args: Array[String]): Unit = {
-    val scanner = new Scanner(System.in)
-    print("Enter job query: ")
-    val query = scanner.nextLine()
-    print("Number of pages: ")
-    val numPages = scanner.nextInt()
-    scanner.close()
-    val locations = List("Boston", "Seattle", "Chicago", "Austin", "San Jose","Boulder", "Washington")//"Boston", "Seattle", "Chicago", "Austin", "San Jose","Boulder", "Washington"
-
+  def processQuery(query: String, numPages: Int, locations: List[String]): Unit = {
     val csvFile = new File(s"/Users/sayeedahmed/IdeaProjects/JobScrapper/jobscapper/src/main/resources/all_locations.csv")
-    val writer = new FileWriter(csvFile, true)
+    val writer = new FileWriter(csvFile)
     // Check if the file is new or empty before writing the header
     if (!csvFile.exists() || csvFile.length() == 0) {
-        writer.write("job_ID|job_title|company|location|job_link|salary|job_description|timeScraped\n")
+      writer.write("job_ID|job_title|company|location|job_link|salary|job_description|category|timeScraped\n")
     }
     val options = new ChromeOptions()
     options.addArguments("headless")
@@ -40,7 +31,7 @@ object IndeedScraperMulti {
 
     val scrapingFutures = locations.map { location =>
       Future {
-        val driver = new ChromeDriver()//(options)
+        val driver = new ChromeDriver() //(options)
         val jobs = scrapeIndeed(driver, query, location, numPages)
         driver.quit()
         (location, jobs)
@@ -75,6 +66,7 @@ object IndeedScraperMulti {
           link = jobLink,
           salary = parseSalary(parsedResult),
           description = description.getOrElse(""),
+          query = query, // Add query to the Job case class
           timeScraped = timeScraped
         )
       }
@@ -157,7 +149,7 @@ object IndeedScraperMulti {
 
   def writeJobsToCSV(writer: FileWriter, jobs: List[Job]): Unit = {
     jobs.foreach { job =>
-      writer.write(s"${job.id}|${job.title}|${job.company}|${job.location}|${job.link}|${job.salary}|${job.description}|${job.timeScraped}\n")
+      writer.write(s"${job.id}|${job.title}|${job.company}|${job.location}|${job.link}|${job.salary}|${job.description}|${job.query}|${job.timeScraped}\n")
     }
   }
 }
