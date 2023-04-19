@@ -2,19 +2,17 @@
   import org.apache.spark.sql.{DataFrame, SparkSession}
 
   object JobDataProcessor {
-    def main(args: Array[String]): Unit = {
+    def processData(inputFilePath: String): Unit = {
       val spark = SparkSession.builder()
         .appName("JobDataProcessor")
         .master("local")
         .getOrCreate()
 
-      val inputFilePath = "/Users/sayeedahmed/IdeaProjects/JobScrapper/jobscapper/src/main/resources/all_locations.csv"
-
       val rawData = readCSV(spark, inputFilePath)
       val cleanedData = cleanData(rawData)
 
       val jdbcUrl = "jdbc:mysql://127.0.0.1:3306/jobs_db"
-      val dbTable = "jobs_test"
+      val dbTable = "jobs_all"
       val dbUser = "root"
       val dbPassword = "Knock!23"
       val connectionProperties = Map("user" -> dbUser, "password" -> dbPassword)
@@ -26,6 +24,7 @@
         "job_link" -> 16777215, // mediumtext has a maximum length of 16,777,215 characters
         "salary" -> 45,
         "job_description" -> 4294967295L, // longtext has a maximum length of 4,294,967,295 characters
+        "category" -> 45,
         "timeScraped" -> 50
       )
 
@@ -83,9 +82,11 @@
         .filter(length(col("job_link")) <= maxLengths("job_link"))
         .filter(length(col("salary")) <= maxLengths("salary"))
         .filter(length(col("job_description")) <= maxLengths("job_description"))
+        .filter(length(col("category")) <= maxLengths("category")) // Add this line for the category column
         .filter(length(col("timeScraped")) <= maxLengths("timeScraped"))
         .join(existingData, cleanedData("job_ID") === existingData("job_ID"), "leftanti")
     }
+
 
 
     def writeToDatabase(df: DataFrame, saveMode: String, jdbcUrl: String, dbTable: String, connectionProperties: Map[String, String]): Unit = {
