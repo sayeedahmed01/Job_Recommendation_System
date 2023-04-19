@@ -8,7 +8,7 @@
         .master("local")
         .getOrCreate()
 
-      val inputFilePath = "/Users/sayeedahmed/IdeaProjects/JobScrapper/all_locations.csv"
+      val inputFilePath = "/Users/sayeedahmed/IdeaProjects/JobScrapper/jobscapper/src/main/resources/all_locations.csv"
 
       val rawData = readCSV(spark, inputFilePath)
       val cleanedData = cleanData(rawData)
