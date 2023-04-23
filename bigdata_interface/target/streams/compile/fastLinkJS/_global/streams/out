@@ -1,0 +1,24 @@
+[0m[[0m[0minfo[0m] [0m[0mFast optimizing C:\Users\cheth\Desktop\BigData_WebInterface\bigdata_interface\target\scala-2.13\bigdata_interface-fastopt[0m
+[0m[[0m[0mdebug[0m] [0m[0mLinker: Compute reachability: 565278 us[0m
+[0m[[0m[0mdebug[0m] [0m[0mLinker: Assemble LinkedClasses: 63450 us[0m
+[0m[[0m[0mdebug[0m] [0m[0mLinker: 796693 us[0m
+[0m[[0m[0mdebug[0m] [0m[0mOptimizer: Batch mode: true[0m
+[0m[[0m[0mdebug[0m] [0m[0mOptimizer: Incremental part: 228252 us[0m
+[0m[[0m[0mdebug[0m] [0m[0mOptimizer: Optimizing 1688 methods.[0m
+[0m[[0m[0mdebug[0m] [0m[0mOptimizer: Optimizer part: 978089 us[0m
+[0m[[0m[0mdebug[0m] [0m[0mOptimizer: 1223911 us[0m
+[0m[[0m[0mdebug[0m] [0m[0mRefiner: Compute reachability: 79689 us[0m
+[0m[[0m[0mdebug[0m] [0m[0mRefiner: Assemble LinkedClasses: 13915 us[0m
+[0m[[0m[0mdebug[0m] [0m[0mRefiner: 121863 us[0m
+[0m[[0m[0mdebug[0m] [0m[0mModule Splitter: Calculate Dependency Info: 6132 us[0m
+[0m[[0m[0mdebug[0m] [0m[0mModule Splitter: Analyze Modules: 2627 us[0m
+[0m[[0m[0mdebug[0m] [0m[0mModule Splitter: Assemble Modules: 15675 us[0m
+[0m[[0m[0mdebug[0m] [0m[0mModule Splitter: 28849 us[0m
+[0m[[0m[0mdebug[0m] [0m[0mEmitter: Generate Classes: 528048 us[0m
+[0m[[0m[0mdebug[0m] [0m[0mEmitter: Write trees: 129491 us[0m
+[0m[[0m[0mdebug[0m] [0m[0mEmitter: Class tree cache stats: reused: 0 -- invalidated: 181[0m
+[0m[[0m[0mdebug[0m] [0m[0mEmitter: Method tree cache stats: reused: 0 -- invalidated: 353[0m
+[0m[[0m[0mdebug[0m] [0m[0mEmitter: 740245 us[0m
+[0m[[0m[0mdebug[0m] [0m[0mBasicBackend: Write result: 365983 us[0m
+[0m[[0m[0mdebug[0m] [0m[0mBasicBackend: total top-level trees: 1138; re-computed: 1138[0m
+[0m[[0m[0mdebug[0m] [0m[0mBasicBackend: total modules: 1; re-written: 1[0m
