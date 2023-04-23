@@ -25,8 +25,8 @@ Additionally, we will develop a user-friendly Scala.js web interface that enable
 2. Setup the MySQL server (Database dump can be found at `src/main/resources/Database`) and update the database credentials in `src/main/scala/JobDataProcessor.scala`
 3. Run the MainApp.scala file to start the web scraping process
 //need review
-4. Run the API.scala file to start the API server
-5. Open the Scala.js web interface by running `sbt fastOptJS` and opening `index.html` in your browser
+4. Run the RMCheckerApplication.scala file to start the API server
+5. Open the Scala.js web interface by running `sbt fastOptJS` within the directory and opening and then starting a local server using the 'http-server' command.
 6. Upload your resume and select the desired job category to view relevant job postings
 7. The results will be displayed in the Scala.js web interface
 
