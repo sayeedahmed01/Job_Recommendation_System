@@ -14,7 +14,7 @@
       val jdbcUrl = "jdbc:mysql://127.0.0.1:3306/jobs_db"
       val dbTable = "jobs_all"
       val dbUser = "root"
-      val dbPassword = "Knock!23"
+      val dbPassword = "root"
       val connectionProperties = Map("user" -> dbUser, "password" -> dbPassword)
       val maxLengths = Map(
         "job_ID" -> 100,

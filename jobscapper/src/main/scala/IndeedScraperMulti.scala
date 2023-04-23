@@ -15,7 +15,7 @@ import scala.util.{Failure, Success, Try}
 case class Job(id: String, title: String, company: String, location: String, link: String, salary: String, description: String, query: String, timeScraped: LocalDateTime)
 object IndeedScraperMulti {
   def processQuery(query: String, numPages: Int, locations: List[String]): Unit = {
-    val csvFile = new File(s"/Users/sayeedahmed/IdeaProjects/JobScrapper/jobscapper/src/main/resources/all_locations.csv")
+    val csvFile = new File("src/main/resources/all_locations.csv")
     val writer = new FileWriter(csvFile)
     // Check if the file is new or empty before writing the header
     if (!csvFile.exists() || csvFile.length() == 0) {
