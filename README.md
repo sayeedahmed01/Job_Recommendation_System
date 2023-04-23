@@ -18,6 +18,7 @@ Our solution is to develop a web scraping application called JobScraper, which a
 Additionally, we will develop a user-friendly Scala.js web interface that enables job seekers to search for job postings relevant to their skills and experience. This will make it easier for job seekers to discover suitable opportunities and stay up-to-date with the latest openings in their desired field.
 
 ## Architecture
+![architecture.png](jobscapper%2Fsrc%2Fmain%2Fresources%2Farchitecture.png)
 
 ## Installation
 1. Clone the repository
